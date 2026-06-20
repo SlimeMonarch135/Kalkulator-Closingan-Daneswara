@@ -33,7 +33,14 @@ if pos_file is not None:
         # 2. Baca file dari HP Kasir
         df_pos = pd.read_excel(pos_file)
         
-        # Hitung Total Omset dari kolom 'Penjualan'
+        # --- PERBAIKAN BUG OMSET DOUBLE ---
+        # Hapus baris yang kosong
+        df_pos = df_pos.dropna(subset=['Produk'])
+        # Abaikan baris yang namanya 'Total' agar tidak ikut terjumlah
+        df_pos = df_pos[df_pos['Produk'].astype(str).str.lower().str.strip() != 'total']
+        # ----------------------------------
+
+        # Hitung Total Omset dari kolom 'Penjualan' yang sudah bersih
         if 'Penjualan' in df_pos.columns:
             omset = df_pos['Penjualan'].sum()
             omset = 0 if pd.isna(omset) else int(omset)
